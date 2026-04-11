@@ -1,3 +1,8 @@
+const AI_CONFIG = {
+    endpoint: 'http://localhost:3000/api/chat',
+    model: 'gemma-4-31b-it'
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
     // Three.js Background Animation
@@ -231,5 +236,71 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.addEventListener('touchstart', pauseAutoScroll);
         nextBtn.addEventListener('mousedown', pauseAutoScroll);
         prevBtn.addEventListener('mousedown', pauseAutoScroll);
+});
+
+    // AI Chatbot Logic
+    const chatFab = document.getElementById('ai-chat-fab');
+    const chatContainer = document.getElementById('ai-chat-container');
+    const closeChat = document.getElementById('close-chat');
+    const chatInput = document.getElementById('chat-input');
+    const sendChat = document.getElementById('send-chat');
+    const chatMessages = document.getElementById('chat-messages');
+
+    chatFab.addEventListener('click', () => {
+        chatContainer.classList.remove('hidden');
+    });
+
+    closeChat.addEventListener('click', () => {
+        chatContainer.classList.add('hidden');
+    });
+
+    const appendMessage = (text, sender) => {
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message', sender);
+        msgDiv.textContent = text;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    const handleSendMessage = async () => {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        appendMessage(text, 'user');
+        chatInput.value = '';
+
+        // Show typing indicator
+        appendMessage('...', 'ai');
+        const lastMsg = chatMessages.lastElementChild;
+
+        try {
+            const response = await fetch(AI_CONFIG.endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: AI_CONFIG.model,
+                    messages: [{ role: 'user', content: text }],
+                    temperature: 0.7
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const aiResponse = data.choices[0].message.content;
+            lastMsg.textContent = aiResponse;
+        } catch (error) {
+            console.error('Chat Error:', error);
+            lastMsg.textContent = 'Lo siento, hubo un error al conectar con el asistente de IA. Por favor, verifica la configuración de la API.';
+        }
+    };
+
+    sendChat.addEventListener('click', handleSendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSendMessage();
     });
 });
