@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatInput.value = '';
 
         // Show typing indicator
-        appendMessage('...', 'ai');
+        appendMessage('...', 'ai', false);
         const lastMsg = chatMessages.lastElementChild;
 
         try {
@@ -419,6 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const aiResponse = data.choices[0].message.content;
             lastMsg.textContent = '';
             processAIResponse(aiResponse, lastMsg);
+            saveMessageToSession(currentSessionId, 'ai', aiResponse);
         } catch (error) {
             console.error('Chat Error:', error);
             lastMsg.textContent = 'Lo siento, hubo un error al conectar con el asistente de IA. Por favor, verifica la configuración de la API.';
