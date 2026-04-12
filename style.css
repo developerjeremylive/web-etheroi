@@ -475,11 +475,12 @@ footer p {
 
 .chat-header {
     padding: 1rem;
-    background-color: var(--accent-color);
-    color: white;
+    background-color: var(--card-bg);
+    color: var(--text-main);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .header-left {
@@ -500,9 +501,9 @@ footer p {
 }
 
 .expand-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
+    background: var(--placeholder-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
     width: 32px;
     height: 32px;
     border-radius: 6px;
@@ -515,16 +516,25 @@ footer p {
 }
 
 .expand-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--border-color);
+    border-color: var(--text-muted);
+    color: var(--text-main);
 }
 
 #close-chat {
     background: none;
     border: none;
-    color: white;
+    color: var(--text-muted);
     font-size: 1.5rem;
     cursor: pointer;
     line-height: 1;
+    opacity: 0.7;
+    transition: var(--transition-smooth);
+}
+
+#close-chat:hover {
+    opacity: 1;
+    color: var(--text-main);
 }
 
 .template-matrix {
