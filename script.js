@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const thinkingText = match[1].trim();
             const thinkingDiv = document.createElement('div');
             thinkingDiv.classList.add('thinking-block');
-            thinkingDiv.textContent = thinkingText;
+            thinkingDiv.innerHTML = marked.parse(thinkingText);
             element.appendChild(thinkingDiv);
             finalContent = text.replace(thoughtRegex, '').trim();
         }
@@ -292,13 +292,13 @@ document.addEventListener('DOMContentLoaded', () => {
         element.appendChild(contentDiv);
 
         // 3. Highlight Code
-        contentDiv.querySelectorAll('pre code').forEach((block) => {
+        element.querySelectorAll('pre code').forEach((block) => {
             hljs.highlightElement(block);
         });
 
         // 4. Render LaTeX
         if (window.renderMathInElement) {
-            renderMathInElement(contentDiv, {
+            renderMathInElement(element, {
                 delimiters: [
                     {left: '$$', right: '$$', display: true},
                     {left: '$', right: '$', display: false},
@@ -313,6 +313,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleSendMessage = async () => {
         const text = chatInput.value.trim();
         if (!text) return;
+
+        // Hide templates on first message
+        if (templateMatrix) templateMatrix.classList.add('hidden');
 
         appendMessage(text, 'user');
         chatInput.value = '';
@@ -347,6 +350,14 @@ document.addEventListener('DOMContentLoaded', () => {
             lastMsg.textContent = 'Lo siento, hubo un error al conectar con el asistente de IA. Por favor, verifica la configuración de la API.';
         }
     };
+
+    // Template handlers
+    document.querySelectorAll('.template-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            chatInput.value = btn.getAttribute('data-prompt');
+            handleSendMessage();
+        });
+    });
 
     sendChat.addEventListener('click', handleSendMessage);
     chatInput.addEventListener('keypress', (e) => {
