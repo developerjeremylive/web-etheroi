@@ -294,6 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const session = history.find(s => s.id === sessionId);
 
         if (session) {
+            if (templateMatrix) templateMatrix.classList.add('hidden');
             chatMessages.innerHTML = '';
             session.messages.forEach(msg => {
                 if (msg.role === 'ai') {
