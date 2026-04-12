@@ -501,6 +501,32 @@ footer p {
     align-items: center;
 }
 
+#toggle-sidebar {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    padding: 0;
+    margin-right: 0.5rem;
+}
+
+#toggle-sidebar:hover {
+    background: var(--bg-color);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
 .expand-btn {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
