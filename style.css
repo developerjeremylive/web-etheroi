@@ -418,11 +418,41 @@ footer p {
     font-size: 0.85rem;
     color: var(--text-muted);
     transition: var(--transition-smooth);
+    border: 1px solid transparent;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.history-item .item-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    border: 1px solid transparent;
-    margin-bottom: 4px;
+    flex: 1;
+}
+
+.delete-chat-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: var(--transition-smooth);
+    line-height: 1;
+    opacity: 0;
+}
+
+.history-item:hover .delete-chat-btn {
+    opacity: 1;
+}
+
+.delete-chat-btn:hover {
+    color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
 }
 
 .history-item:hover {

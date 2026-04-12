@@ -317,11 +317,61 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = document.createElement('div');
             item.classList.add('history-item');
             if (session.id === currentSessionId) item.classList.add('active');
-            item.textContent = session.title;
+
+            const titleSpan = document.createElement('span');
+            titleSpan.classList.add('item-title');
+            titleSpan.textContent = session.title;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '🗑️';
+            deleteBtn.classList.add('delete-chat-btn');
+            deleteBtn.title = 'Eliminar chat';
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openDeleteModal(session.id);
+            });
+
+            item.appendChild(titleSpan);
+            item.appendChild(deleteBtn);
             item.addEventListener('click', () => switchSession(session.id));
             historyList.appendChild(item);
         });
     };
+
+    // --- Delete Chat Logic ---
+    let sessionToDelete = null;
+    const deleteModal = document.getElementById('delete-chat-modal');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+
+    const openDeleteModal = (sessionId) => {
+        sessionToDelete = sessionId;
+        deleteModal.classList.remove('hidden');
+    };
+
+    const closeDeleteModal = () => {
+        deleteModal.classList.add('hidden');
+        sessionToDelete = null;
+    };
+
+    cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+
+    confirmDeleteBtn.addEventListener('click', () => {
+        if (sessionToDelete) {
+            const history = loadHistory();
+            const filteredHistory = history.filter(s => s.id !== sessionToDelete);
+            saveHistory(filteredHistory);
+
+            if (currentSessionId === sessionToDelete) {
+                currentSessionId = null;
+                chatMessages.innerHTML = '';
+                if (templateMatrix) templateMatrix.classList.remove('hidden');
+            }
+
+            renderHistory();
+            closeDeleteModal();
+        }
+    });
 
     // Modified appendMessage to support not saving to history (for loading sessions)
     const appendMessage = (text, sender, saveToHistory = true) => {

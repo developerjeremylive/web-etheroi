@@ -246,6 +246,21 @@
         </div>
     </footer>
     <div id="ai-chat-container" class="ai-chat-container hidden">
+        <!-- Delete Confirmation Modal -->
+        <div id="delete-chat-modal" class="model-info-modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Eliminar Chat</h3>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar este chat? Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-delete-btn" class="btn btn-link text-muted me-2">Cancelar</button>
+                    <button id="confirm-delete-btn" class="btn btn-danger" style="background-color: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Eliminar</button>
+                </div>
+            </div>
+        </div>
         <!-- Model Info Modal -->
         <div id="model-info-modal" class="model-info-modal hidden">
             <div class="modal-content">
