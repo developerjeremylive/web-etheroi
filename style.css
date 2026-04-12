@@ -679,24 +679,100 @@ footer p {
     color: inherit;
 }
 
-/* Thinking Block */
-.thinking-block {
-    border-left: 3px solid var(--accent-color);
-    background-color: var(--bg-color);
-    padding: 0.75rem 1rem;
-    margin-bottom: 1rem;
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    opacity: 0.8;
+/* Model Info Modal */
+.model-info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: var(--transition-smooth);
 }
 
-.thinking-block::before {
-    content: "Thinking... ";
-    font-weight: 600;
+.model-info-modal.hidden {
+    display: none !important;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    width: 500px;
+    max-width: 90vw;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+    padding: 1.25rem;
+    background-color: var(--accent-color);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.modal-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-body p {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.modal-body ul {
+    padding-left: 1.25rem;
+}
+
+.modal-body li {
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.modal-body li strong {
     color: var(--accent-color);
-    display: block;
-    margin-bottom: 0.25rem;
-    font-style: normal;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    background-color: var(--bg-color);
+}
+
+.modal-footer .btn-accent {
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
 }

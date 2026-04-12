@@ -450,6 +450,29 @@ document.addEventListener('DOMContentLoaded', () => {
         chatContainer.classList.toggle('fullscreen');
     });
 
+    // Model Info Modal Control
+    const infoChatBtn = document.getElementById('info-chat');
+    const modelInfoModal = document.getElementById('model-info-modal');
+    const closeModelInfo = document.getElementById('close-model-info');
+    const closeModelInfoBtn = document.getElementById('close-model-info-btn');
+
+    infoChatBtn.addEventListener('click', () => {
+        modelInfoModal.classList.remove('hidden');
+    });
+
+    const closeModal = () => {
+        modelInfoModal.classList.add('hidden');
+    };
+
+    closeModelInfo.addEventListener('click', closeModal);
+    closeModelInfoBtn.addEventListener('click', closeModal);
+
+    window.addEventListener('click', (event) => {
+        if (event.target === modelInfoModal) {
+            closeModal();
+        }
+    });
+
     // Sidebar & Session Control
     newChatBtn.addEventListener('click', () => {
         currentSessionId = null;

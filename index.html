@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button id="ai-chat-fab" class="ai-chat-fab" style="display: flex !important; visibility: visible !important; opacity: 1 !important; position: fixed !important; bottom: 32px !important; right: 32px !important; z-index: 2147483647 !important; width: 60px !important; height: 60px !important; background-color: #d97757 !important; border-radius: 50% !important; align-items: center !important; justify-content: center !important; cursor: pointer !important; border: none !important; color: white !important;" aria-label="Open AI Assistant">
+    <button id="ai-chat-fab" class="ai-chat-fab" aria-label="Open AI Assistant">
         <span class="fab-icon">🤖</span>
     </button>
     <canvas id="bg-canvas"></canvas>
@@ -246,7 +246,31 @@
         </div>
     </footer>
     <div id="ai-chat-container" class="ai-chat-container hidden">
+        <!-- Model Info Modal -->
+        <div id="model-info-modal" class="model-info-modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Gemma 4-31B-IT Capabilities</h3>
+                    <button id="close-model-info" aria-label="Close Modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Gemma 4-31B-IT is a highly capable, open-weights large language model designed for versatility and efficiency. Its key capabilities include:</p>
+                    <ul>
+                        <li><strong>Advanced Reasoning:</strong> Exceptional performance in logical deduction, mathematical problem solving, and complex analytical tasks.</li>
+                        <li><strong>Code Intelligence:</strong> Expert-level proficiency in multiple programming languages, capable of writing, debugging, and optimizing code.</li>
+                        <li><strong>Multilingual Support:</strong> Fluent in numerous languages, providing high-quality translations and culturally nuanced content generation.</li>
+                        <li><strong>Creative Content:</strong> Able to generate high-quality articles, emails, scripts, and other creative formats with adjustable tone and style.</li>
+                        <li><strong>Instruction Following:</strong> Precisely follows complex, multi-step instructions to deliver accurate and structured results.</li>
+                        <li><strong>Technical Knowledge:</strong> Deep understanding of science, technology, and academic subjects.</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button id="close-model-info-btn" class="btn btn-accent">Got it!</button>
+                </div>
+            </div>
+        </div>
         <div class="chat-sidebar hidden">
+
             <div class="sidebar-header">
                 <span class="sidebar-title">Historial</span>
             </div>
@@ -262,6 +286,7 @@
                     <h3>AI Assistant</h3>
                 </div>
                 <div class="header-actions">
+                    <button id="info-chat" class="expand-btn" aria-label="Model Info">❓</button>
                     <button id="expand-chat" class="expand-btn" aria-label="Expand Chat">⛶</button>
                     <button id="close-chat" aria-label="Close Chat">&times;</button>
                 </div>
