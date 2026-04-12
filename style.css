@@ -464,6 +464,7 @@ footer p {
     right: 20px;
     border-radius: 20px;
     border: 1px solid var(--border-color);
+    z-index: 2147483647 !important;
 }
 
 .ai-chat-container.hidden {
