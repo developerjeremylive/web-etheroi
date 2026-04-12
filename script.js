@@ -250,6 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chatFab.addEventListener('click', () => {
         chatContainer.classList.remove('hidden');
+        chatFab.classList.add('hidden');
     });
 
     expandChat.addEventListener('click', () => {
@@ -259,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeChat.addEventListener('click', () => {
         chatContainer.classList.add('hidden');
         chatContainer.classList.remove('fullscreen');
+        chatFab.classList.remove('hidden');
     });
 
     const appendMessage = (text, sender) => {
