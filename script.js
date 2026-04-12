@@ -239,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
     // AI Chatbot Logic
+    let currentSessionId = null;
     const chatFab = document.getElementById('ai-chat-fab');
     const chatContainer = document.getElementById('ai-chat-container');
     const expandChat = document.getElementById('expand-chat');
@@ -247,39 +248,97 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendChat = document.getElementById('send-chat');
     const chatMessages = document.getElementById('chat-messages');
     const templateMatrix = document.getElementById('template-matrix');
+    const historyList = document.getElementById('history-list');
+    const newChatBtn = document.getElementById('new-chat-btn');
+    const toggleSidebar = document.getElementById('toggle-sidebar');
 
-    chatFab.addEventListener('click', () => {
-        chatContainer.classList.remove('hidden');
-        chatFab.classList.add('hidden');
-    });
+    // --- History System Logic ---
+    const STORAGE_KEY = 'etheroi_chat_history';
 
-    expandChat.addEventListener('click', () => {
-        chatContainer.classList.toggle('fullscreen');
-    });
+    const loadHistory = () => {
+        const history = localStorage.getItem(STORAGE_KEY);
+        return history ? JSON.parse(history) : [];
+    };
 
-    closeChat.addEventListener('click', () => {
-        chatContainer.classList.add('hidden');
-        chatContainer.classList.remove('fullscreen');
-        chatFab.classList.remove('hidden');
-    });
+    const saveHistory = (history) => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    };
 
-    const appendMessage = (text, sender) => {
+    const createSession = (firstPrompt) => {
+        const history = loadHistory();
+        const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const newSession = {
+            id: sessionId,
+            title: firstPrompt.substring(0, 40) + (firstPrompt.length > 40 ? '...' : ''),
+            timestamp: Date.now(),
+            messages: []
+        };
+        history.unshift(newSession);
+        saveHistory(history);
+        return sessionId;
+    };
+
+    const saveMessageToSession = (sessionId, role, content) => {
+        const history = loadHistory();
+        const session = history.find(s => s.id === sessionId);
+        if (session) {
+            session.messages.push({ role, content });
+            saveHistory(history);
+        }
+    };
+
+    const switchSession = (sessionId) => {
+        currentSessionId = sessionId;
+        localStorage.setItem('etheroi_last_session_id', sessionId);
+        const history = loadHistory();
+        const session = history.find(s => s.id === sessionId);
+
+        if (session) {
+            chatMessages.innerHTML = '';
+            session.messages.forEach(msg => {
+                if (msg.role === 'ai') {
+                    const msgDiv = appendMessage(msg.content, 'ai', false);
+                    processAIResponse(msg.content, msgDiv);
+                } else {
+                    appendMessage(msg.content, 'user', false);
+                }
+            });
+            renderHistory();
+        }
+    };
+
+    const renderHistory = () => {
+        if (!historyList) return;
+        const history = loadHistory();
+        historyList.innerHTML = '';
+
+        history.forEach(session => {
+            const item = document.createElement('div');
+            item.classList.add('history-item');
+            if (session.id === currentSessionId) item.classList.add('active');
+            item.textContent = session.title;
+            item.addEventListener('click', () => switchSession(session.id));
+            historyList.appendChild(item);
+        });
+    };
+
+    // Modified appendMessage to support not saving to history (for loading sessions)
+    const appendMessage = (text, sender, saveToHistory = true) => {
         const msgDiv = document.createElement('div');
         msgDiv.classList.add('message', sender);
-
-        if (sender === 'user') {
-            msgDiv.textContent = text;
-        } else {
-            // For AI, we initially set text or leave empty for rich rendering
-            msgDiv.textContent = text;
-        }
-
+        msgDiv.textContent = text;
         chatMessages.appendChild(msgDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        if (saveToHistory && currentSessionId) {
+            saveMessageToSession(currentSessionId, sender === 'user' ? 'user' : 'ai', text);
+        }
         return msgDiv;
     };
 
+
     const processAIResponse = (text, element) => {
+        element.textContent = '';
         // 1. Handle Thinking Block
         const thoughtRegex = /<thought>([\s\S]*?)<\/thought>/;
         const match = text.match(thoughtRegex);
@@ -322,6 +381,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleSendMessage = async () => {
         const text = chatInput.value.trim();
         if (!text) return;
+
+        // Create session if none exists
+        if (!currentSessionId) {
+            currentSessionId = createSession(text);
+            renderHistory();
+        }
 
         // Hide templates on first message
         if (templateMatrix) templateMatrix.classList.add('hidden');
@@ -367,6 +432,42 @@ document.addEventListener('DOMContentLoaded', () => {
             handleSendMessage();
         });
     });
+
+    // Chat Container Control
+    chatFab.addEventListener('click', () => {
+        chatContainer.classList.remove('hidden');
+        chatFab.classList.add('hidden');
+    });
+
+    closeChat.addEventListener('click', () => {
+        chatContainer.classList.add('hidden');
+        chatFab.classList.remove('hidden');
+    });
+
+    expandChat.addEventListener('click', () => {
+        chatContainer.classList.toggle('fullscreen');
+    });
+
+    // Sidebar & Session Control
+    newChatBtn.addEventListener('click', () => {
+        currentSessionId = null;
+        chatMessages.innerHTML = '';
+        if (templateMatrix) templateMatrix.classList.remove('hidden');
+        renderHistory();
+    });
+
+    toggleSidebar.addEventListener('click', () => {
+        const sidebar = document.querySelector('.chat-sidebar');
+        sidebar.classList.toggle('hidden');
+    });
+
+    // Initial History Load
+    renderHistory();
+
+    const lastSessionId = localStorage.getItem('etheroi_last_session_id');
+    if (lastSessionId) {
+        switchSession(lastSessionId);
+    }
 
     sendChat.addEventListener('click', handleSendMessage);
     chatInput.addEventListener('keypress', (e) => {
