@@ -257,9 +257,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const appendMessage = (text, sender) => {
         const msgDiv = document.createElement('div');
         msgDiv.classList.add('message', sender);
-        msgDiv.textContent = text;
+
+        if (sender === 'user') {
+            msgDiv.textContent = text;
+        } else {
+            // For AI, we initially set text or leave empty for rich rendering
+            msgDiv.textContent = text;
+        }
+
         chatMessages.appendChild(msgDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        return msgDiv;
+    };
+
+    const processAIResponse = (text, element) => {
+        // 1. Handle Thinking Block
+        const thoughtRegex = /<thought>([\s\S]*?)<\/thought>/;
+        const match = text.match(thoughtRegex);
+        let finalContent = text;
+
+        if (match) {
+            const thinkingText = match[1].trim();
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.classList.add('thinking-block');
+            thinkingDiv.textContent = thinkingText;
+            element.appendChild(thinkingDiv);
+            finalContent = text.replace(thoughtRegex, '').trim();
+        }
+
+        // 2. Render Markdown
+        const contentDiv = document.createElement('div');
+        contentDiv.classList.add('ai-content');
+        contentDiv.innerHTML = marked.parse(finalContent);
+        element.appendChild(contentDiv);
+
+        // 3. Highlight Code
+        contentDiv.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+
+        // 4. Render LaTeX
+        if (window.renderMathInElement) {
+            renderMathInElement(contentDiv, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
     };
 
     const handleSendMessage = async () => {
@@ -292,7 +340,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             const aiResponse = data.choices[0].message.content;
-            lastMsg.textContent = aiResponse;
+            lastMsg.textContent = '';
+            processAIResponse(aiResponse, lastMsg);
         } catch (error) {
             console.error('Chat Error:', error);
             lastMsg.textContent = 'Lo siento, hubo un error al conectar con el asistente de IA. Por favor, verifica la configuración de la API.';

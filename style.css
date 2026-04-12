@@ -453,6 +453,74 @@ footer p {
     transition: var(--transition-smooth);
 }
 
-#send-chat:hover {
-    filter: brightness(1.1);
+/* AI Chat Rich Content */
+.message.ai .ai-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.message.ai .ai-content p {
+    margin: 0;
+}
+
+.message.ai .ai-content ul,
+.message.ai .ai-content ol {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.message.ai .ai-content h1,
+.message.ai .ai-content h2,
+.message.ai .ai-content h3 {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.message.ai .ai-content code {
+    background-color: var(--placeholder-bg);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.85em;
+}
+
+.message.ai .ai-content pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.message.ai .ai-content pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+/* Thinking Block */
+.thinking-block {
+    border-left: 3px solid var(--accent-color);
+    background-color: var(--bg-color);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.thinking-block::before {
+    content: "Thinking... ";
+    font-weight: 600;
+    color: var(--accent-color);
+    display: block;
+    margin-bottom: 0.25rem;
+    font-style: normal;
 }
