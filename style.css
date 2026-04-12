@@ -1,3 +1,7 @@
+.hidden {
+    display: none !important;
+}
+
 #bg-canvas {
     position: fixed;
     top: 0;
@@ -451,9 +455,6 @@ footer p {
     transform: translateY(-2px);
 }
 
-.template-matrix.hidden {
-    display: none;
-}
 
 .chat-messages {
     flex: 1;
