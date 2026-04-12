@@ -502,24 +502,27 @@ footer p {
 }
 
 .expand-btn {
-    background: var(--placeholder-bg);
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
     color: var(--text-main);
     width: 32px;
     height: 32px;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.9rem;
     transition: var(--transition-smooth);
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: var(--shadow-sm);
 }
 
 .expand-btn:hover {
-    background: var(--border-color);
-    border-color: var(--text-muted);
+    background: var(--bg-color);
+    border-color: var(--accent-color);
     color: var(--text-main);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 #close-chat {
