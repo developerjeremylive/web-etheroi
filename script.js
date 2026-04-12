@@ -241,17 +241,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // AI Chatbot Logic
     const chatFab = document.getElementById('ai-chat-fab');
     const chatContainer = document.getElementById('ai-chat-container');
+    const expandChat = document.getElementById('expand-chat');
     const closeChat = document.getElementById('close-chat');
     const chatInput = document.getElementById('chat-input');
     const sendChat = document.getElementById('send-chat');
     const chatMessages = document.getElementById('chat-messages');
+    const templateMatrix = document.getElementById('template-matrix');
 
     chatFab.addEventListener('click', () => {
         chatContainer.classList.remove('hidden');
     });
 
+    expandChat.addEventListener('click', () => {
+        chatContainer.classList.toggle('fullscreen');
+    });
+
     closeChat.addEventListener('click', () => {
         chatContainer.classList.add('hidden');
+        chatContainer.classList.remove('fullscreen');
     });
 
     const appendMessage = (text, sender) => {

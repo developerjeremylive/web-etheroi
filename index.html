@@ -245,7 +245,18 @@
     <div id="ai-chat-container" class="ai-chat-container hidden">
         <div class="chat-header">
             <h3>AI Assistant</h3>
-            <button id="close-chat" aria-label="Close Chat">&times;</button>
+            <div class="header-actions">
+                <button id="expand-chat" class="expand-btn" aria-label="Expand Chat">⛶</button>
+                <button id="close-chat" aria-label="Close Chat">&times;</button>
+            </div>
+        </div>
+        <div id="template-matrix" class="template-matrix">
+            <button class="template-btn" data-prompt="Actúa como un experto en arquitectura de software. Analiza el siguiente código y sugiere mejoras de rendimiento y escalabilidad: [Pega tu código aquí]">Optimización de Código</button>
+            <button class="template-btn" data-prompt="Ayúdame a diseñar una estrategia de contenido para una startup de IA enfocada en B2B. Incluye canales, KPIs y ejemplos de mensajes clave.">Estrategia B2B AI</button>
+            <button class="template-btn" data-prompt="Genera un plan de aprendizaje detallado para dominar el desarrollo de aplicaciones con LLMs, incluyendo frameworks como LangChain o LlamaIndex.">Ruta de Aprendizaje LLM</button>
+            <button class="template-btn" data-prompt="Escribe un análisis comparativo técnico entre arquitecturas de microservicios y monolitos modulares para un proyecto de escala media.">Análisis de Arquitectura</button>
+            <button class="template-btn" data-prompt="Crea un prompt de sistema optimizado para un agente de soporte técnico que debe ser empático, conciso y resolver problemas complejos de API.">Prompt Engineering</button>
+            <button class="template-btn" data-prompt="Explica los conceptos matemáticos detrás de la atención (Attention Mechanism) en los Transformers de manera sencilla pero técnica.">Conceptos de Transformers</button>
         </div>
         <div id="chat-messages" class="chat-messages"></div>
         <div class="chat-input-area">
