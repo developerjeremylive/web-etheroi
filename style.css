@@ -482,6 +482,11 @@ footer p {
     align-items: center;
 }
 
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
 .chat-header h3 {
     margin: 0;
     font-size: 1rem;
