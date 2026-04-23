@@ -1355,19 +1355,85 @@ header h1 {
     filter: brightness(1.1);
 }
 
+/* Futuristic Footer Link */
+.footer-col.etheroi-link-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: flex-end;
+}
+
+.futuristic-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 2rem;
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 12px;
+    background: var(--placeholder-bg);
+    border: 1px solid var(--border-color);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    overflow: hidden;
+    z-index: 1;
+}
+
+.link-text {
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.link-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, var(--accent-color) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 0;
+    filter: blur(15px);
+}
+
+.link-border {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    transition: none;
+    z-index: 1;
+}
+
+.futuristic-link:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 20px rgba(217, 119, 87, 0.3);
+    transform: translateY(-2px);
+    color: var(--accent-color);
+}
+
+.futuristic-link:hover .link-glow {
+    opacity: 0.4;
+}
+
+.futuristic-link:hover .link-border {
+    animation: borderSlide 1.5s infinite linear;
+}
+
+@keyframes borderSlide {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
 @media (max-width: 768px) {
-    .project-modal-content {
-        width: 95%;
-        height: 90vh;
-    }
-    .project-modal-sections {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-    .project-modal-info {
-        padding: 2rem 1.5rem 3rem;
-    }
-    .project-modal-title {
-        font-size: 1.8rem;
+    .footer-col.etheroi-link-col {
+        align-items: center;
     }
 }
+
