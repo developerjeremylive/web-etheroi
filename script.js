@@ -6,40 +6,46 @@ const AI_CONFIG = {
 document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
     // Three.js Background Animation
-    function initBackground() {
+    let currentAnimationType = 'constellation';
+    let animationRequestId = null;
+    let backgroundScene, backgroundCamera, backgroundRenderer;
+
+    function setupBackground() {
         const canvas = document.getElementById('bg-canvas');
         if (!canvas) return;
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({
+        backgroundScene = new THREE.Scene();
+        backgroundCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        backgroundRenderer = new THREE.WebGLRenderer({
             canvas: canvas,
             alpha: true,
             antialias: true
         });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        backgroundRenderer.setSize(window.innerWidth, window.innerHeight);
+        backgroundRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        backgroundCamera.position.z = 5;
+    }
 
-        camera.position.z = 5;
+    function clearScene() {
+        while(backgroundScene.children.length > 0){ 
+            backgroundScene.remove(backgroundScene.children[0]); 
+        }
+    }
 
-        // --- Constellation Logic ---
+    function initConstellation() {
         const particleCount = 150;
         const maxDistance = 1.5;
         const speed = 0.01;
         const bounds = { x: 10, y: 10, z: 10 };
 
-        const particles = [];
         const positions = new Float32Array(particleCount * 3);
         const velocities = new Float32Array(particleCount * 3);
+        const particles = [];
 
         for (let i = 0; i < particleCount; i++) {
-            const x = (Math.random() - 0.5) * bounds.x;
-            const y = (Math.random() - 0.5) * bounds.y;
-            const z = (Math.random() - 0.5) * bounds.z;
-
-            positions[i * 3] = x;
-            positions[i * 3 + 1] = y;
-            positions[i * 3 + 2] = z;
+            positions[i * 3] = (Math.random() - 0.5) * bounds.x;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * bounds.y;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * bounds.z;
 
             velocities[i * 3] = (Math.random() - 0.5) * speed;
             velocities[i * 3 + 1] = (Math.random() - 0.5) * speed;
@@ -48,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const particleGeometry = new THREE.BufferGeometry();
         particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
         const particleMaterial = new THREE.PointsMaterial({
             color: 0x888888,
             size: 0.05,
@@ -57,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-        scene.add(particleSystem);
+        backgroundScene.add(particleSystem);
 
         const lineGeometry = new THREE.BufferGeometry();
         const lineMaterial = new THREE.LineBasicMaterial({
@@ -67,113 +72,160 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const lineSystem = new THREE.LineSegments(lineGeometry, lineMaterial);
-        scene.add(lineSystem);
+        backgroundScene.add(lineSystem);
 
-        // --- Theme Synchronization ---
-        const updateThemeColors = (theme) => {
-            const isDark = theme === 'dark';
-            const color = isDark ? 0xe28d6c : 0x888888; // Use accent color for dark mode
-            const opacity = isDark ? 0.8 : 0.6;
-            const lineOpacity = isDark ? 0.4 : 0.2;
+        return {
+            update: (mouse) => {
+                const posAttr = particleGeometry.attributes.position;
+                const linePositions = [];
+                const vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+                vector.unproject(backgroundCamera);
+                const dir = vector.sub(backgroundCamera.position).normalize();
+                const distance = -backgroundCamera.position.z / dir.z;
+                const mouseWorldPos = backgroundCamera.position.clone().add(dir.multiplyScalar(distance));
 
-            particleMaterial.color.setHex(color);
-            particleMaterial.opacity = opacity;
-            lineMaterial.color.setHex(color);
-            lineMaterial.opacity = lineOpacity;
-        };
-
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
-                    updateThemeColors(htmlElement.getAttribute('data-theme'));
-                }
-            });
-        });
-
-        observer.observe(htmlElement, { attributes: true });
-        updateThemeColors(htmlElement.getAttribute('data-theme'));
-
-        // --- Window Resize Handling ---
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // --- Mouse Interaction ---
-        const mouse = { x: 0, y: 0 };
-        window.addEventListener('mousemove', (event) => {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        });
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            const posAttr = particleGeometry.attributes.position;
-            const linePositions = [];
-
-            // Convert mouse normalized coordinates to 3D world space (approximate)
-            const vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
-            vector.unproject(camera);
-            const dir = vector.sub(camera.position).normalize();
-            const distance = -camera.position.z / dir.z;
-            const mouseWorldPos = camera.position.clone().add(dir.multiplyScalar(distance));
-
-            for (let i = 0; i < particleCount; i++) {
-                const ix = i * 3;
-                const iy = i * 3 + 1;
-                const iz = i * 3 + 2;
-
-                // Update positions
-                posAttr.array[ix] += velocities[ix];
-                posAttr.array[iy] += velocities[iy];
-                posAttr.array[iz] += velocities[iz];
-
-                // Mouse repulsion logic
-                const dx = posAttr.array[ix] - mouseWorldPos.x;
-                const dy = posAttr.array[iy] - mouseWorldPos.y;
-                const dz = posAttr.array[iz] - mouseWorldPos.z;
-                const distSq = dx * dx + dy * dy + dz * dz;
-                if (distSq < 2) {
-                    const force = (2 - distSq) * 0.001;
-                    velocities[ix] += dx * force;
-                    velocities[iy] += dy * force;
-                    velocities[iz] += dz * force;
-                }
-
-                // Bounce boundaries
-                if (Math.abs(posAttr.array[ix]) > bounds.x / 2) velocities[ix] *= -1;
-                if (Math.abs(posAttr.array[iy]) > bounds.y / 2) velocities[iy] *= -1;
-                if (Math.abs(posAttr.array[iz]) > bounds.z / 2) velocities[iz] *= -1;
-
-                // Check distance with other particles
-                for (let j = i + 1; j < particleCount; j++) {
-                    const jx = j * 3;
-                    const jy = j * 3 + 1;
-                    const jz = j * 3 + 2;
-                    const ddx = posAttr.array[ix] - posAttr.array[jx];
-                    const ddy = posAttr.array[iy] - posAttr.array[jy];
-                    const ddz = posAttr.array[iz] - posAttr.array[jz];
-                    const dDistSq = ddx * ddx + ddy * ddy + ddz * ddz;
-
-                    if (dDistSq < maxDistance * maxDistance) {
-                        linePositions.push(
-                            posAttr.array[ix], posAttr.array[iy], posAttr.array[iz],
-                            posAttr.array[jx], posAttr.array[jy], posAttr.array[jz]
-                        );
+                for (let i = 0; i < particleCount; i++) {
+                    const ix = i * 3;
+                    const iy = i * 3 + 1;
+                    const iz = i * 3 + 2;
+                    posAttr.array[ix] += velocities[ix];
+                    posAttr.array[iy] += velocities[iy];
+                    posAttr.array[iz] += velocities[iz];
+                    const dx = posAttr.array[ix] - mouseWorldPos.x;
+                    const dy = posAttr.array[iy] - mouseWorldPos.y;
+                    const dz = posAttr.array[iz] - mouseWorldPos.z;
+                    const distSq = dx * dx + dy * dy + dz * dz;
+                    if (distSq < 2) {
+                        const force = (2 - distSq) * 0.001;
+                        velocities[ix] += dx * force;
+                        velocities[iy] += dy * force;
+                        velocities[iz] += dz * force;
+                    }
+                    if (Math.abs(posAttr.array[ix]) > bounds.x / 2) velocities[ix] *= -1;
+                    if (Math.abs(posAttr.array[iy]) > bounds.y / 2) velocities[iy] *= -1;
+                    if (Math.abs(posAttr.array[iz]) > bounds.z / 2) velocities[iz] *= -1;
+                    for (let j = i + 1; j < particleCount; j++) {
+                        const jx = j * 3; const jy = j * 3 + 1; const jz = j * 3 + 2;
+                        const ddx = posAttr.array[ix] - posAttr.array[jx];
+                        const ddy = posAttr.array[iy] - posAttr.array[jy];
+                        const ddz = posAttr.array[iz] - posAttr.array[jz];
+                        const dDistSq = ddx * ddx + ddy * ddy + ddz * ddz;
+                        if (dDistSq < maxDistance * maxDistance) {
+                            linePositions.push(posAttr.array[ix], posAttr.array[iy], posAttr.array[iz], posAttr.array[jx], posAttr.array[jy], posAttr.array[jz]);
+                        }
                     }
                 }
+                posAttr.needsUpdate = true;
+                lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(linePositions), 3));
+                particleMaterial.color.setHex(htmlElement.getAttribute('data-theme') === 'dark' ? 0xe28d6c : 0x888888);
+                lineMaterial.color.setHex(htmlElement.getAttribute('data-theme') === 'dark' ? 0xe28d6c : 0x888888);
             }
+        };
+    }
 
-            posAttr.needsUpdate = true;
-            lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(linePositions), 3));
+    function initFloatingOrbs() {
+        const orbCount = 20;
+        const orbs = [];
+        for (let i = 0; i < orbCount; i++) {
+            const geometry = new THREE.SphereGeometry(Math.random() * 0.5 + 0.2, 32, 32);
+            const material = new THREE.MeshPhongMaterial({
+                color: Math.random() * 0xffffff,
+                transparent: true,
+                opacity: 0.3,
+                shininess: 100
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set((Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 10);
+            mesh.userData = {
+                velocity: new THREE.Vector3((Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.01),
+                rotSpeed: (Math.random() - 0.5) * 0.01
+            };
+            backgroundScene.add(mesh);
+            orbs.push(mesh);
+        }
+        const light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(0, 0, 5);
+        backgroundScene.add(light);
+        backgroundScene.add(new THREE.AmbientLight(0x404040));
 
-            renderer.render(scene, camera);
+        return {
+            update: () => {
+                orbs.forEach(orb => {
+                    orb.position.add(orb.userData.velocity);
+                    orb.rotation.x += orb.userData.rotSpeed;
+                    orb.rotation.y += orb.userData.rotSpeed;
+                    if (Math.abs(orb.position.x) > 8) orb.userData.velocity.x *= -1;
+                    if (Math.abs(orb.position.y) > 8) orb.userData.velocity.y *= -1;
+                    if (Math.abs(orb.position.z) > 8) orb.userData.velocity.z *= -1;
+                });
+            }
+        };
+    }
+
+    function initDigitalRain() {
+        const rainCount = 100;
+        const geometry = new THREE.BoxGeometry(0.02, 0.5, 0.02);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x888888,
+            transparent: true,
+            opacity: 0.5
+        });
+        const rain = [];
+        for (let i = 0; i < rainCount; i++) {
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set((Math.random() - 0.5) * 20, Math.random() * 20, (Math.random() - 0.5) * 10);
+            backgroundScene.add(mesh);
+            rain.push(mesh);
         }
 
-        animate();
+        return {
+            update: () => {
+                rain.forEach(drop => {
+                    drop.position.y -= 0.05;
+                    if (drop.position.y < -10) drop.position.y = 10;
+                });
+                material.color.setHex(htmlElement.getAttribute('data-theme') === 'dark' ? 0xe28d6c : 0x888888);
+            }
+        };
     }
+
+    let currentAnimUpdater = null;
+
+    function startAnimation(type) {
+        clearScene();
+        currentAnimationType = type;
+        if (type === 'constellation') currentAnimUpdater = initConstellation();
+        else if (type === 'orbs') currentAnimUpdater = initFloatingOrbs();
+        else if (type === 'rain') currentAnimUpdater = initDigitalRain();
+    }
+
+    function animate() {
+        animationRequestId = requestAnimationFrame(animate);
+        const mouse = { x: 0, y: 0 };
+        // Note: mouse update is handled by the window listener below
+        if (currentAnimUpdater) {
+            // We'll pass a global mouse object
+            currentAnimUpdater.update(window.mousePos || { x: 0, y: 0 });
+        }
+        backgroundRenderer.render(backgroundScene, backgroundCamera);
+    }
+
+    function initBackground() {
+        setupBackground();
+        window.mousePos = { x: 0, y: 0 };
+        window.addEventListener('mousemove', (event) => {
+            window.mousePos.x = (event.clientX / window.innerWidth) * 2 - 1;
+            window.mousePos.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+        startAnimation('constellation');
+        animate();
+        window.addEventListener('resize', () => {
+            backgroundCamera.aspect = window.innerWidth / window.innerHeight;
+            backgroundCamera.updateProjectionMatrix();
+            backgroundRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    }
+
 
 
     initBackground();
@@ -194,6 +246,24 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    const bgAnimationToggle = document.getElementById('bg-animation-toggle');
+    const bgAnimationIcon = document.querySelector('.bg-animation-icon');
+    const animationTypes = ['constellation', 'orbs', 'rain'];
+    const animationIcons = {
+        'constellation': '✨',
+        'orbs': '🔮',
+        'rain': '🌧️'
+    };
+
+    bgAnimationToggle.addEventListener('click', () => {
+        let nextIndex = (animationTypes.indexOf(currentAnimationType) + 1) % animationTypes.length;
+        const nextType = animationTypes[nextIndex];
+        
+        currentAnimationType = nextType;
+        startAnimation(nextType);
+        bgAnimationIcon.textContent = animationIcons[nextType];
     });
 
     const carousels = document.querySelectorAll('.carousel-container');
