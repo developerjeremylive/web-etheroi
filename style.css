@@ -999,29 +999,10 @@ header h1 {
     background: var(--card-bg);
     color: var(--text-main);
     border-radius: 32px;
-    overflow-y: auto;
+    overflow: hidden;
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-md);
     animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    scrollbar-color: var(--accent-color) var(--placeholder-bg);
-}
-
-.project-modal-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.project-modal-content::-webkit-scrollbar-track {
-    background: var(--placeholder-bg);
-    border-radius: 10px;
-}
-
-.project-modal-content::-webkit-scrollbar-thumb {
-    background: var(--accent-color);
-    border-radius: 10px;
-}
-
-.project-modal-content::-webkit-scrollbar-thumb:hover {
-    background: var(--text-main);
 }
 
 @keyframes modalSlideUp {
@@ -1057,6 +1038,27 @@ header h1 {
 .project-modal-body {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-color: var(--accent-color) var(--placeholder-bg);
+}
+
+.project-modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.project-modal-body::-webkit-scrollbar-track {
+    background: var(--placeholder-bg);
+    border-radius: 10px;
+}
+
+.project-modal-body::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 10px;
+}
+
+.project-modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--text-main);
 }
 
 .project-modal-hero {
