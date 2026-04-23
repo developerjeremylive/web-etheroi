@@ -258,6 +258,14 @@ body {
 }
 
 
+.custom-navbar .navbar-brand,
+.custom-navbar .nav-link,
+.custom-navbar .navbar-toggler,
+.custom-navbar .theme-toggle,
+#bg-animation-toggle {
+    pointer-events: auto;
+}
+
 .custom-navbar .navbar-brand {
     font-weight: 600;
     font-size: 1.25rem;
@@ -270,10 +278,6 @@ body {
     color: var(--text-muted) !important;
     font-size: 0.9rem;
     transition: var(--transition-smooth);
-}
-
-.custom-navbar .nav-link:hover {
-    color: var(--text-main) !important;
 }
 
 .theme-toggle {
@@ -643,11 +647,17 @@ header h1 {
     visibility: hidden !important;
 }
 
-/* Hide FAB when loader is active */
-body:has(.page-loader:not(.loaded)) #ai-chat-fab {
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
+/* Navbar and Header interaction fix */
+.custom-navbar {
+    cursor: default;
+}
+
+.custom-navbar .nav-link, 
+.custom-navbar .theme-toggle, 
+.custom-navbar #bg-animation-toggle,
+.custom-navbar .navbar-toggler,
+.custom-navbar .navbar-brand {
+    pointer-events: auto;
 }
 
 .ai-chat-fab:hover {
@@ -1547,6 +1557,7 @@ body:has(.page-loader:not(.loaded)) #ai-chat-fab {
     100% { left: 100%; }
 }
 
+.logo {
     position: relative;
     display: inline-block;
     padding: 0 10px;
@@ -1584,17 +1595,6 @@ body:has(.page-loader:not(.loaded)) #ai-chat-fab {
     z-index: 1;
 }
 
-.futuristic-logo:hover {
-    color: var(--accent-color) !important;
-}
-
-.futuristic-logo:hover .logo-glow {
-    opacity: 0.4;
-}
-
-.futuristic-logo:hover .logo-border {
-    animation: borderSlide 1.5s infinite linear;
-}
 
 @keyframes borderSlide {
     0% { left: -100%; }
