@@ -197,6 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'constellation') currentAnimUpdater = initConstellation();
         else if (type === 'orbs') currentAnimUpdater = initFloatingOrbs();
         else if (type === 'rain') currentAnimUpdater = initDigitalRain();
+        else if (type === 'starfield') currentAnimUpdater = initStarfield();
+        else if (type === 'waveform') currentAnimUpdater = initWaveform();
     }
 
     function animate() {
@@ -250,11 +252,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const bgAnimationToggle = document.getElementById('bg-animation-toggle');
     const bgAnimationIcon = document.querySelector('.bg-animation-icon');
-    const animationTypes = ['constellation', 'orbs', 'rain'];
+    const animationTypes = ['constellation', 'orbs', 'rain', 'starfield', 'waveform'];
     const animationIcons = {
         'constellation': '✨',
         'orbs': '🔮',
-        'rain': '🌧️'
+        'rain': '🌧️',
+        'starfield': '🚀',
+        'waveform': '🌊'
     };
 
     bgAnimationToggle.addEventListener('click', () => {
@@ -486,7 +490,77 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Modified appendMessage to support not saving to history (for loading sessions)
+    function initStarfield() {
+        const starCount = 1000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(starCount * 3);
+        const velocities = new Float32Array(starCount);
+
+        for (let i = 0; i < starCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 20;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 50;
+            velocities[i] = Math.random() * 0.1 + 0.05;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.05,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const starSystem = new THREE.Points(geometry, material);
+        backgroundScene.add(starSystem);
+
+        return {
+            update: () => {
+                const posAttr = geometry.attributes.position;
+                for (let i = 0; i < starCount; i++) {
+                    posAttr.array[i * 3 + 2] += velocities[i];
+                    if (posAttr.array[i * 3 + 2] > 10) {
+                        posAttr.array[i * 3 + 2] = -40;
+                        posAttr.array[i * 3] = (Math.random() - 0.5) * 20;
+                        posAttr.array[i * 3 + 1] = (Math.random() - 0.5) * 20;
+                    }
+                }
+                posAttr.needsUpdate = true;
+                material.color.setHex(htmlElement.getAttribute('data-theme') === 'dark' ? 0xe28d6c : 0x888888);
+            }
+        };
+    }
+
+    function initWaveform() {
+        const size = 20;
+        const segments = 30;
+        const geometry = new THREE.PlaneGeometry(size, size, segments, segments);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x888888,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.rotation.x = -Math.PI / 3;
+        backgroundScene.add(mesh);
+
+        return {
+            update: () => {
+                const time = Date.now() * 0.001;
+                const posAttr = geometry.attributes.position;
+                for (let i = 0; i < posAttr.count; i++) {
+                    const x = posAttr.array[i * 3];
+                    const y = posAttr.array[i * 3 + 1];
+                    posAttr.array[i * 3 + 2] = Math.sin(x * 0.5 + time) * Math.cos(y * 0.5 + time) * 1.5;
+                }
+                posAttr.needsUpdate = true;
+                material.color.setHex(htmlElement.getAttribute('data-theme') === 'dark' ? 0xe28d6c : 0x888888);
+            }
+        };
+    }
+
     const appendMessage = (text, sender, saveToHistory = true) => {
         const msgDiv = document.createElement('div');
         msgDiv.classList.add('message', sender);
