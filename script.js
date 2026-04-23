@@ -238,7 +238,50 @@ document.addEventListener('DOMContentLoaded', () => {
         prevBtn.addEventListener('mousedown', pauseAutoScroll);
 });
 
+    // Project Modal Logic
+    const projectModal = document.getElementById('project-modal');
+    const closeModalBtn = document.getElementById('close-project-modal');
+    const modalOverlay = document.querySelector('.project-modal-overlay');
+    
+    const modalTitle = document.getElementById('project-modal-title');
+    const modalText = document.getElementById('project-modal-text');
+    const modalLink = document.getElementById('project-modal-link');
+    const modalImage = document.getElementById('project-modal-image');
+
+    const openProjectModal = (title, text, link, imageUrl = '') => {
+        modalTitle.textContent = title;
+        modalText.textContent = text;
+        modalLink.href = link;
+        modalImage.style.backgroundImage = imageUrl ? `url(${imageUrl})` : 'none';
+        
+        projectModal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    };
+
+    const closeProjectModal = () => {
+        projectModal.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
+    closeModalBtn.addEventListener('click', closeProjectModal);
+    modalOverlay.addEventListener('click', closeProjectModal);
+
+    // Intercept project links to open modal instead of navigating
+    document.querySelectorAll('.project-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const card = link.closest('.project-card');
+            const title = card.querySelector('h3').textContent;
+            const description = card.querySelector('p').textContent;
+            const href = link.getAttribute('href');
+            
+            // For now, we use a placeholder image as the project-card images are empty divs
+            openProjectModal(title, description, href);
+        });
+    });
+
     // AI Chatbot Logic
+
     let currentSessionId = null;
     const chatFab = document.getElementById('ai-chat-fab');
     const chatContainer = document.getElementById('ai-chat-container');
