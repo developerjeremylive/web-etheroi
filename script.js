@@ -5,6 +5,16 @@ const AI_CONFIG = {
 
 document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
+
+    const animationTypes = ['constellation', 'orbs', 'rain', 'starfield', 'waveform'];
+    const animationIcons = {
+        'constellation': '✨',
+        'orbs': '🔮',
+        'rain': '🌧️',
+        'starfield': '🚀',
+        'waveform': '🌊'
+    };
+
     // Three.js Background Animation
     let currentAnimationType = 'constellation';
     let animationRequestId = null;
@@ -219,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.mousePos.x = (event.clientX / window.innerWidth) * 2 - 1;
             window.mousePos.y = -(event.clientY / window.innerHeight) * 2 + 1;
         });
-        startAnimation('constellation');
+        startAnimation(animationTypes[Math.floor(Math.random() * animationTypes.length)]);
         animate();
         window.addEventListener('resize', () => {
             backgroundCamera.aspect = window.innerWidth / window.innerHeight;
@@ -231,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     initBackground();
-
     // Theme Toggle Logic
 
     const themeToggle = document.getElementById('theme-toggle');
@@ -252,14 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const bgAnimationToggle = document.getElementById('bg-animation-toggle');
     const bgAnimationIcon = document.querySelector('.bg-animation-icon');
-    const animationTypes = ['constellation', 'orbs', 'rain', 'starfield', 'waveform'];
-    const animationIcons = {
-        'constellation': '✨',
-        'orbs': '🔮',
-        'rain': '🌧️',
-        'starfield': '🚀',
-        'waveform': '🌊'
-    };
 
     bgAnimationToggle.addEventListener('click', () => {
         let nextIndex = (animationTypes.indexOf(currentAnimationType) + 1) % animationTypes.length;
