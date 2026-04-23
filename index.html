@@ -218,12 +218,20 @@
             <div class="carousel-container">
                 <button class="carousel-nav prev" aria-label="Previous">←</button>
                 <div class="grid">
-                    <div class="project-card flex-shrink-0">
+                    <div class="project-card flex-shrink-0" data-solution="Implementación de una arquitectura SaaS escalable con módulos de IA para automatización de flujos de trabajo empresariales." data-tech="React, Node.js, PostgreSQL, OpenAI API">
                         <div class="project-image"></div>
                         <div class="project-info">
                             <h3>Premium Enterprise SaaS Suite with AI</h3>
                             <p>Desarrollo de una plataforma SaaS empresarial avanzada integrada con capacidades de Inteligencia Artificial para optimizar procesos operativos.</p>
                             <a href="https://www.etheroi.com/#AI-Powered%20Software%20Solutions" class="project-link">Ver proyecto →</a>
+                        </div>
+                    </div>
+                    <div class="project-card flex-shrink-0" data-solution="Desarrollo de una plataforma de chat avanzada que permite la interacción con múltiples modelos de IA, implementando capacidades de agente autónomo para resolver tareas complejas y brindar asistencia conversacional inteligente." data-tech="Cloudflare AI, Gemini, LangChain, React">
+                        <div class="project-image"></div>
+                        <div class="project-info">
+                            <h3>AI Agent Chat</h3>
+                            <p>Plataforma de chat con agentes de IA avanzados. Asistente conversacional potenciado por múltiples modelos de IA con capacidades de agente autónomo.</p>
+                            <a href="https://agent.etheroi.com" class="project-link">Ver proyecto →</a>
                         </div>
                     </div>
                 </div>
@@ -276,11 +284,11 @@
                     <div class="project-modal-sections">
                         <div class="project-section">
                             <h3>🚀 Solución</h3>
-                            <p>Explicación de cómo se implementó la solución, los desafíos superados y la metodología utilizada.</p>
+                            <p id="project-modal-solution">Explicación de cómo se implementó la solución, los desafíos superados y la metodología utilizada.</p>
                         </div>
                         <div class="project-section">
                             <h3>🛠️ Tecnología</h3>
-                            <div class="tech-stack">
+                            <div id="project-modal-tech" class="tech-stack">
                                 <span class="tech-tag">React</span>
                                 <span class="tech-tag">Node.js</span>
                                 <span class="tech-tag">Three.js</span>

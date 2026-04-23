@@ -323,11 +323,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalLink = document.getElementById('project-modal-link');
     const modalImage = document.getElementById('project-modal-image');
 
-    const openProjectModal = (title, text, link, imageUrl = '') => {
+    const modalSolution = document.getElementById('project-modal-solution');
+    const modalTech = document.getElementById('project-modal-tech');
+
+    const openProjectModal = (title, text, link, solution, tech, imageUrl = '') => {
         modalTitle.textContent = title;
         modalText.textContent = text;
         modalLink.href = link;
         modalImage.style.backgroundImage = imageUrl ? `url(${imageUrl})` : 'none';
+        
+        if (modalSolution) modalSolution.textContent = solution || 'Sin información disponible.';
+        if (modalTech) {
+            modalTech.innerHTML = '';
+            if (tech) {
+                tech.split(',').forEach(t => {
+                    const span = document.createElement('span');
+                    span.classList.add('tech-tag');
+                    span.textContent = t.trim();
+                    modalTech.appendChild(span);
+                });
+            } else {
+                modalTech.innerHTML = '<span class="tech-tag">Sin tecnología especificada</span>';
+            }
+        }
         
         projectModal.classList.add('active');
         document.body.style.overflow = 'hidden'; // Prevent scrolling
@@ -349,9 +367,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const title = card.querySelector('h3').textContent;
             const description = card.querySelector('p').textContent;
             const href = link.getAttribute('href');
+            const solution = card.getAttribute('data-solution');
+            const tech = card.getAttribute('data-tech');
             
             // For now, we use a placeholder image as the project-card images are empty divs
-            openProjectModal(title, description, href);
+            openProjectModal(title, description, href, solution, tech);
         });
     });
 
