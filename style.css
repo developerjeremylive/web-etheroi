@@ -289,11 +289,12 @@ header h1 {
     padding: 3rem 2rem;
     margin-bottom: 2rem;
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 
 .footer-main-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr;
     gap: 3rem;
     margin-bottom: 3rem;
 }
@@ -315,7 +316,7 @@ header h1 {
 .footer-about {
     font-size: 0.95rem;
     color: var(--text-muted);
-    max-width: 300px;
+    max-width: 400px;
     line-height: 1.6;
 }
 
