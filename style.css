@@ -1431,9 +1431,60 @@ header h1 {
     100% { left: 100%; }
 }
 
-@media (max-width: 768px) {
-    .footer-col.etheroi-link-col {
-        align-items: center;
-    }
+/* Futuristic Logo Animation */
+.futuristic-logo {
+    position: relative;
+    display: inline-block;
+    padding: 0 10px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    text-decoration: none !important;
 }
+
+.logo-text {
+    position: relative;
+    z-index: 2;
+}
+
+.logo-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, var(--accent-color) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 0;
+    filter: blur(10px);
+}
+
+.logo-border {
+    position: absolute;
+    bottom: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    transition: none;
+    z-index: 1;
+}
+
+.futuristic-logo:hover {
+    color: var(--accent-color) !important;
+}
+
+.futuristic-logo:hover .logo-glow {
+    opacity: 0.4;
+}
+
+.futuristic-logo:hover .logo-border {
+    animation: borderSlide 1.5s infinite linear;
+}
+
+@keyframes borderSlide {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
 
