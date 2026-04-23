@@ -313,6 +313,53 @@ document.addEventListener('DOMContentLoaded', () => {
         prevBtn.addEventListener('mousedown', pauseAutoScroll);
 });
 
+    // Hero Carousel Logic
+    const heroGrid = document.querySelector('.hero-grid');
+    const heroNavNext = document.querySelector('.hero-nav.next');
+    const heroNavPrev = document.querySelector('.hero-nav.prev');
+    let currentHeroSlide = 0;
+
+    if (heroGrid && heroNavNext && heroNavPrev) {
+        const totalHeroSlides = document.querySelectorAll('.hero-slice').length;
+
+        const updateHeroSlide = () => {
+            if (window.innerWidth > 768) {
+                heroGrid.style.transform = `translateX(-${currentHeroSlide * 100}%)`;
+            }
+        };
+
+        heroNavNext.addEventListener('click', () => {
+            currentHeroSlide = (currentHeroSlide + 1) % totalHeroSlides;
+            updateHeroSlide();
+        });
+
+        heroNavPrev.addEventListener('click', () => {
+            currentHeroSlide = (currentHeroSlide - 1 + totalHeroSlides) % totalHeroSlides;
+            updateHeroSlide();
+        });
+
+        // Auto-play hero slider
+        setInterval(() => {
+            if (window.innerWidth > 768) {
+                currentHeroSlide = (currentHeroSlide + 1) % totalHeroSlides;
+                updateHeroSlide();
+            } else {
+                // Mobile auto-scroll: using scrollBy for native smooth scrolling
+                heroGrid.scrollBy({ 
+                    left: heroGrid.offsetWidth, 
+                    behavior: 'smooth' 
+                });
+
+                // Handle wrap-around for native scroll
+                if (heroGrid.scrollLeft + heroGrid.offsetWidth >= heroGrid.scrollWidth - 10) {
+                    setTimeout(() => {
+                        heroGrid.scrollTo({ left: 0, behavior: 'smooth' });
+                    }, 600);
+                }
+            }
+        }, 6000);
+    }
+
     // Project Modal Logic
     const projectModal = document.getElementById('project-modal');
     const closeModalBtn = document.getElementById('close-project-modal');
@@ -365,20 +412,22 @@ document.addEventListener('DOMContentLoaded', () => {
     closeModalBtn.addEventListener('click', closeProjectModal);
     modalOverlay.addEventListener('click', closeProjectModal);
 
-    // Intercept project links to open modal instead of navigating
-    document.querySelectorAll('.project-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const card = link.closest('.project-card');
-            const title = card.querySelector('h3').textContent;
-            const description = card.querySelector('p').textContent;
-            const href = link.getAttribute('href');
-            const solution = card.getAttribute('data-solution');
-            const tech = card.getAttribute('data-tech');
-            
-            // For now, we use a placeholder image as the project-card images are empty divs
-            openProjectModal(title, description, href, solution, tech);
-        });
+    // Intercept project links using event delegation for better reliability
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('.project-link');
+        if (!link) return;
+
+        e.preventDefault();
+        const card = link.closest('.project-card');
+        if (!card) return;
+
+        const title = card.querySelector('h3')?.textContent || 'Sin título';
+        const description = card.querySelector('p')?.textContent || 'Sin descripción';
+        const href = link.getAttribute('href');
+        const solution = card.getAttribute('data-solution');
+        const tech = card.getAttribute('data-tech');
+        
+        openProjectModal(title, description, href, solution, tech);
     });
 
     // AI Chatbot Logic
