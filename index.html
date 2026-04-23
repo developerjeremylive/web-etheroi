@@ -12,7 +12,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button id="ai-chat-fab" class="ai-chat-fab" aria-label="Open AI Assistant">
+    <div id="page-loader" class="page-loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Etheroi</p>
+        </div>
+    </div>
+    <button id="ai-chat-fab" class="ai-chat-fab fab-hidden" aria-label="Open AI Assistant">
+
+
         <span class="fab-icon">🤖</span>
     </button>
     <canvas id="bg-canvas"></canvas>

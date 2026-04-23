@@ -4,6 +4,44 @@ const AI_CONFIG = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Hide loader when page has fully loaded
+    const hideLoaderAndShowFAB = () => {
+        const loader = document.getElementById('page-loader');
+        if (loader) {
+            loader.classList.add('loaded');
+        }
+
+        const fab = document.getElementById('ai-chat-fab');
+        if (fab) {
+            fab.classList.remove('fab-hidden');
+        }
+
+        // Restore scrolling
+        document.body.classList.remove('no-scroll');
+    };
+
+    // Lock scroll immediately to prevent background movement during load
+    document.body.classList.add('no-scroll');
+
+    if (document.readyState === 'complete') {
+        hideLoaderAndShowFAB();
+    } else {
+        window.addEventListener('load', hideLoaderAndShowFAB);
+    }
+
+    // Safety timeout: ensure loader is gone and FAB is visible after 5 seconds
+    setTimeout(() => {
+        const loader = document.getElementById('page-loader');
+        const fab = document.getElementById('ai-chat-fab');
+        if (loader && !loader.classList.contains('loaded')) {
+            loader.classList.add('loaded');
+        }
+        if (fab && fab.classList.contains('fab-hidden')) {
+            fab.classList.remove('fab-hidden');
+        }
+        document.body.classList.remove('no-scroll');
+    }, 5000);
+
     const htmlElement = document.documentElement;
 
     const animationTypes = ['constellation', 'orbs', 'rain', 'starfield', 'waveform'];
