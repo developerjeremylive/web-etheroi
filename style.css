@@ -2,6 +2,12 @@
     display: none !important;
 }
 
+#ai-chat-fab.hidden {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
 #bg-canvas {
     position: fixed;
     top: 0;

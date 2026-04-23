@@ -349,11 +349,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         projectModal.classList.add('active');
         document.body.style.overflow = 'hidden'; // Prevent scrolling
+        
+        const fab = document.getElementById('ai-chat-fab');
+        if (fab) fab.classList.add('hidden');
     };
 
     const closeProjectModal = () => {
         projectModal.classList.remove('active');
         document.body.style.overflow = '';
+        
+        const fab = document.getElementById('ai-chat-fab');
+        if (fab) fab.classList.remove('hidden');
     };
 
     closeModalBtn.addEventListener('click', closeProjectModal);
